@@ -1,3 +1,5 @@
+import Particles from "./particles.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     new Swiper('.swiper.slider', {
         speed: 2400,
@@ -17,4 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
             enabled: true
         }
     })
+
+    const particles = new Particles('.particles')
 });
