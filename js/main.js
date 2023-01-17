@@ -1,16 +1,16 @@
 import Particles from "./particles.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    new Swiper('.swiper.slider', {
+    const swiper = new Swiper('.swiper.slider', {
         speed: 2400,
-        // loop: true,
+        loop: true,
         // freeMode: true,
         mousewheel: {
             enabled: true,
             speed: 2.4  
         },
         spaceBetween: 30,
-        effect: 'slides',
+        effect: 'slide',
         // autoplay: {
         //     delay: 5000
         // },
@@ -21,4 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     const particles = new Particles('.particles')
+
+    swiper.on('reachBeginning', () => {
+        particles.refresh();
+    })
 });

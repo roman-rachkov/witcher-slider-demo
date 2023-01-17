@@ -6,9 +6,15 @@ export class Particles {
 		color: '#ffffff'
 	}
 
-	constructor(selector, settings = {}) {
-		this.canvasList = document.querySelectorAll(selector);
+
+	constructor(selector = '.particles', settings = {}) {
 		this.settings = { ...this.settings, ...settings }
+		this.selector = selector;
+		this.refresh();
+	}
+
+	refresh(){
+		this.canvasList = document.querySelectorAll(this.selector);
 		this.create()
 	}
 
@@ -24,6 +30,7 @@ export class Particles {
 				array: []
 			}
 
+
 			const ctx = canvas.getContext('2d'),
 				clr = this.hexToRgbA(canvas.dataset.color ?? this.settings.color),
 				width = window.innerWidth,
@@ -36,17 +43,17 @@ export class Particles {
 			function createDots(ctx) {
 
 				ctx.clearRect(0, 0, width, height)
-
 				for (let i = 0; i < dots.num; i++) {
 					dots.array.push(new Dot(dots.velocity, canvas.dataset.radius ? parseFloat(canvas.dataset.radius) : this.settings.radius, width, height))
 					dots.array[i].create(ctx)
 					dots.array[i].animate()
-
 				}
 
 			}
 
 			setInterval(() => createDots.call(this, ctx), 1000 / 60)
+			console.log(dots);
+
 
 		})
 	}
