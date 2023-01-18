@@ -25,4 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     swiper.on('reachBeginning', () => {
         particles.refresh();
     })
+    swiper.on('reachEnd', () => {
+        particles.refresh();
+    })
 });

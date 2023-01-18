@@ -6,6 +6,8 @@ export class Particles {
 		color: '#ffffff'
 	}
 
+	particles = []
+
 
 	constructor(selector = '.particles', settings = {}) {
 		this.settings = { ...this.settings, ...settings }
@@ -13,49 +15,50 @@ export class Particles {
 		this.refresh();
 	}
 
-	refresh(){
+	refresh() {
+		this.particles = [];
 		this.canvasList = document.querySelectorAll(this.selector);
 		this.create()
+		this.animate()
 	}
 
 	create() {
 
-		this.canvasList.forEach(canvas => {
+		this.canvasList.forEach((canvas, idx) => {
 
-			const dots = {
-				num: canvas.dataset.quantity ? parseInt(canvas.dataset.quantity) : this.settings.quantity,
-				distance: 200,
-				d_radius: 200,
-				velocity: -.9,
-				array: []
-			}
-
-
-			const ctx = canvas.getContext('2d'),
-				clr = this.hexToRgbA(canvas.dataset.color ?? this.settings.color),
+			const clr = this.hexToRgbA(canvas.dataset.color ?? this.settings.color),
 				width = window.innerWidth,
 				height = window.innerHeight
 
-			canvas.width = width
-			canvas.height = height
-			ctx.fillStyle = clr
-
-			function createDots(ctx) {
-
-				ctx.clearRect(0, 0, width, height)
-				for (let i = 0; i < dots.num; i++) {
-					dots.array.push(new Dot(dots.velocity, canvas.dataset.radius ? parseFloat(canvas.dataset.radius) : this.settings.radius, width, height))
-					dots.array[i].create(ctx)
-					dots.array[i].animate()
-				}
-
+			this.particles[idx] = {
+				num: canvas.dataset.quantity ? parseInt(canvas.dataset.quantity) : this.settings.quantity,
+				velocity: -.9,
+				ctx: canvas.getContext('2d'),
+				array: [],
+				width,
+				height
 			}
 
-			setInterval(() => createDots.call(this, ctx), 1000 / 60)
-			console.log(dots);
+			canvas.width = width
+			canvas.height = height
+			this.particles[idx].ctx.fillStyle = clr
 
-
+			for (let i = 0; i < this.particles[idx].num; i++) {
+				this.particles[idx].array.push(new Dot(this.particles[idx].velocity, canvas.dataset.radius ? parseFloat(canvas.dataset.radius) : this.settings.radius, width, height));
+			}
 		})
+	}
+
+
+	animate() {
+		setInterval(() => this.particles.forEach(partical => {
+			partical.ctx.clearRect(0, 0, partical.width, partical.height);
+
+			partical.array.forEach(dot => {
+				dot.animate();
+				dot.render(partical.ctx);
+			})
+		}), 1000 / 60);
 	}
 
 	hexToRgbA(hex) {
@@ -72,6 +75,8 @@ export class Particles {
 export class Dot {
 	constructor(velocity, radius, width, height) {
 
+		this.width = width
+		this.height	= height
 		this.x = Math.random() * width
 		this.y = Math.random() * height
 		this.vx = velocity + Math.random()
@@ -80,21 +85,22 @@ export class Dot {
 
 	}
 
-	create(ctx) {
+	render(ctx) {
 		ctx.beginPath()
 		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
 		ctx.fill()
 	}
 
 	animate() {
-		if (this.x < 0 || this.x > this.width) {
-			this.vx = - this.vx
+		if (this.x <= 0 || this.x >= this.width) {
+			this.vx *= -1
 		}
-		if (this.y < 0 || this.y > this.height) {
-			this.vy = - this.vy
+		if (this.y <= 0 || this.y >= this.height) {
+			this.vy *= -1
 		}
 		this.x += this.vx
 		this.y += this.vy
+
 	}
 }
 
